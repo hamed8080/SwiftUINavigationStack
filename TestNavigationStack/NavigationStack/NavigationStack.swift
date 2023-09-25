@@ -27,6 +27,7 @@ struct NavigationStackBody<Content: View>: View {
                     .frame(height: 42)
             }
             NavigationStackToolbarContainer()
+                .id(viewModel.stackItems.last?.id ?? rootItem.id)
                 .environmentObject(viewModel.stackItems.last?.toolbarItems ?? rootItem.toolbarItems)
         }
         .animation(.easeInOut, value: viewModel.stackItems.count)
