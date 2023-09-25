@@ -16,16 +16,7 @@ struct NavigationStackBody<Content: View>: View {
 
     var body: some View {
         ZStack {
-            ZStack {
-                ForEach(viewModel.stackItems) { stackItem in
-                    StackItemView(stackItem: stackItem, onPushStackItem: self.onPushStackItem, offsetX: self.viewModel.offsetX)
-                }
-            }
-            .simultaneousGesture(leadingGesture)
-            .compatibleSafeAreaInset(edge: .top) {
-                Spacer()
-                    .frame(height: 42)
-            }
+            stackViews
             NavigationStackToolbarContainer()
                 .id(viewModel.stackItems.last?.id ?? rootItem.id)
                 .environmentObject(viewModel.stackItems.last?.toolbarItems ?? rootItem.toolbarItems)
@@ -37,9 +28,44 @@ struct NavigationStackBody<Content: View>: View {
         }
     }
 
+   @ViewBuilder var stackViews: some View {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+            iOS15View
+        } else {
+            iOS13View
+        }
+    }
+
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+    var iOS15View: some View {
+        ZStack {
+            ForEach(viewModel.stackItems) { stackItem in
+                StackItemView(stackItem: stackItem, onPushStackItem: self.onPushStackItem, offsetX: self.viewModel.offsetX)
+            }
+        }
+        .simultaneousGesture(isPhone ? leadingGesture : nil)
+        .safeAreaInset(edge: .top) {
+            Spacer()
+                .frame(height: 42)
+        }
+    }
+
+    var iOS13View: some View {
+        ZStack {
+            ForEach(viewModel.stackItems) { stackItem in
+                StackItemView(stackItem: stackItem, onPushStackItem: self.onPushStackItem, offsetX: self.viewModel.offsetX)
+            }
+        }
+        .simultaneousGesture(isPhone ? leadingGesture : nil)
+        .compatibleSafeAreaInset(edge: .top) {
+            Spacer()
+                .frame(height: 42)
+        }
+    }
+
     /// In iPhone devices, we need to use a gesture to simulate swipe-to-back functionality.
     var leadingGesture: some Gesture {
-        DragGesture(minimumDistance: 1, coordinateSpace: .global)
+        DragGesture(minimumDistance: 16, coordinateSpace: .global)
             .onChanged { value in
                 if !self.canSlide { return }
                 if value.startLocation.x < 16 {

@@ -7,20 +7,6 @@
 
 import SwiftUI
 
-//@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *)
-//public struct MaterialBackgroundModifier: ViewModifier {
-//    let material: Material
-//
-//    public init(material: Material) {
-//        self.material = material
-//    }
-//
-//    public func body(content: Content) -> some View {
-//        content.background(.regularMaterial)
-//    }
-//}
-
-
 struct VisualEffectView: UIViewRepresentable {
     var effect: UIVisualEffect?
     func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
@@ -28,13 +14,7 @@ struct VisualEffectView: UIViewRepresentable {
 }
 
 public extension View {
-//
-//    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *)
-//    func materialBackground(_ material: Material) -> some View {
-//        return background(material)
-//    }
-
-    func materialBackground(colorScheme: ColorScheme) -> some View {
+    func compatibleMaterialBackground(colorScheme: ColorScheme) -> some View {
         background(
             GeometryReader { reader in
                 Rectangle()
@@ -48,17 +28,6 @@ public extension View {
 }
 
 public extension View {
-
-//    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-//    func compatibleSafeAreaInset<V>(_ edgeSet: VerticalEdge, alignment: HorizontalAlignment, spacing: CGFloat? = nil, @ViewBuilder content: () ->(V)) -> some View where V: View {
-//        return safeAreaInset(edge: edgeSet, alignment: alignment, spacing: spacing, content: content)
-//    }
-//
-//    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-//    func compatibleSafeAreaInset<V>(_ edgeSet: HorizontalEdge, alignment: VerticalAlignment, spacing: CGFloat? = nil, @ViewBuilder content: () ->(V)) -> some View where V : View {
-//        return safeAreaInset(edge: edgeSet, alignment: alignment, spacing: spacing, content: content)
-//    }
-
     func compatibleSafeAreaInset<V>(edge: Edge.Set, spacing: CGFloat? = nil, content: @escaping () -> (V)) -> some View where V: View {
             GeometryReader { reader in
                 ZStack {
@@ -67,11 +36,5 @@ public extension View {
                 content()
             }
         }
-    }
-}
-
-public extension View {
-    func overlay<V>(alignment: Alignment = .center, content: V) -> some View where V: View {
-        overlay(content, alignment: alignment)
     }
 }

@@ -13,41 +13,76 @@ struct NavigationStackToolbarContainer: View {
 
     var body: some View {
         VStack {
-            HStack{
-                ToolbarBackButton()
-                ForEach(toolbarItem.leadingItems) { toolbarItem in
-                    toolbarItem.value
-                }
-                Spacer()
-
-                Spacer()
-                ForEach(toolbarItem.trailingItems) { toolbarItem in
-                    toolbarItem.value
-                }
-            }
-            .padding([.leading, .trailing, .bottom], 8)
-            .frame(minWidth: 0, maxWidth: .infinity)
-            .materialBackground(colorScheme: colorScheme)
+            horizontalView
             Spacer()
         }
         .frame(minWidth: 0, maxWidth: .infinity)
-        .overlay(alignment: .top, content: titleOverlay)
         .animation(.easeInOut, value: toolbarItem.title)
     }
-    
-   var titleOverlay: some View {
-        HStack {
+
+    @ViewBuilder var horizontalView: some View {
+        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *) {
+            ios15HorizontalStack
+        } else {
+            ios13HorizontalStack
+        }
+    }
+
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 10.0, *)
+    var ios15HorizontalStack: some View {
+        HStack(spacing: 0) {
+            ToolbarBackButton()
+            ForEach(toolbarItem.leadingItems) { toolbarItem in
+                toolbarItem.value
+            }
+            Spacer()
+
+            Spacer()
+            ForEach(toolbarItem.trailingItems) { toolbarItem in
+                toolbarItem.value
+            }
+        }
+        .padding([.leading, .trailing, .bottom], 8)
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .background(Material.thinMaterial)
+        .overlay(alignment: .top) {
+            titleOverlay
+        }
+    }
+
+    var ios13HorizontalStack: some View {
+        HStack(spacing: 0) {
+            ToolbarBackButton()
+            ForEach(toolbarItem.leadingItems) { toolbarItem in
+                toolbarItem.value
+            }
+            Spacer()
+
+            Spacer()
+            ForEach(toolbarItem.trailingItems) { toolbarItem in
+                toolbarItem.value
+            }
+        }
+        .padding([.leading, .trailing, .bottom], 8)
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .compatibleMaterialBackground(colorScheme: colorScheme)
+        .overlay(titleOverlay, alignment: .top)
+    }
+
+    var titleOverlay: some View {
+        HStack(spacing: 0) {
             Spacer()
             Text(toolbarItem.title ?? "")
             Spacer()
         }
+        .padding(.top, 3)
     }
 }
 
 struct ToolbarBackButton: View {
     @EnvironmentObject var viewModel: StackViewModel
 
-   @ViewBuilder var body: some View {
+    @ViewBuilder var body: some View {
         if viewModel.stackItems.count > 1 {
             Button(action: {
                 self.viewModel.popLast()
